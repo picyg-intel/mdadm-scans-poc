@@ -1,0 +1,41 @@
+name: License Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  scan-licenses:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: sudo apt-get install -y unzip
+
+    - name: Download ScanCode Toolkit
+      run: |
+        curl -L -o scancode-toolkit.zip https://github.com/nexB/scancode-toolkit/releases/latest/download/scancode-toolkit-zip.zip
+        unzip scancode-toolkit.zip
+        mv scancode-toolkit-* scancode-toolkit
+
+    - name: Run ScanCode
+      run: |
+        ./scancode-toolkit/scancode \
+          --license \
+          --copyright \
+          --json-pp results.json .
+
+    - name: Upload scan results
+      uses: actions/upload-artifact@v4
+      with:
+        name: scancode-results
+        path: results.json
