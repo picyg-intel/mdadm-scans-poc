@@ -22,6 +22,8 @@ jobs:
 
     - name: Download ScanCode Toolkit
       run: |
+        mkdir -p /tmp/tools
+        cd /tmp/tools
         curl -L -o scancode-toolkit.tar.gz \
           https://github.com/aboutcode-org/scancode-toolkit/releases/download/v32.4.1/scancode-toolkit-v32.4.1_py3.10-linux.tar.gz
         tar -xzf scancode-toolkit.tar.gz
@@ -29,11 +31,11 @@ jobs:
 
     - name: Run ScanCode
       run: |
-        cd scancode-toolkit/ && ./configure
+        cd /tmp/tools/scancode-toolkit/ && ./configure
         ./scancode \
           --license \
           --copyright \
-          --json-pp ../results.json ${{ github.workspace }}
+          --json-pp ${{ github.workspace }}/results.json ${{ github.workspace }}
 
     - name: Upload scan results
       uses: actions/upload-artifact@v4
