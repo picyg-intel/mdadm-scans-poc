@@ -13,10 +13,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y curl
+    - name: Install Python 3.10
+      run: |
+        sudo add-apt-repository ppa:deadsnakes/ppa -y
+        sudo apt-get update
+        sudo apt-get install -y python3.10 python3.10-venv python3.10-distutils
+        sudo ln -s /usr/bin/python3.10 /usr/local/bin/python3.10
 
-    - name: Download ScanCode Toolkit (Linux version)
+    - name: Download ScanCode Toolkit
       run: |
         curl -L -o scancode-toolkit.tar.gz \
           https://github.com/aboutcode-org/scancode-toolkit/releases/download/v32.4.1/scancode-toolkit-v32.4.1_py3.10-linux.tar.gz
