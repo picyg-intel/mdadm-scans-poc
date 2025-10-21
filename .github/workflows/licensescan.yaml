@@ -23,7 +23,7 @@ jobs:
 
     - name: Download ScanCode Toolkit
       run: |
-        curl -L -o scancode-toolkit.zip https://github.com/nexB/scancode-toolkit/releases/latest/download/scancode-toolkit-zip.zip
+        curl -L -o scancode-toolkit.zip https://github.com/aboutcode-org/scancode-toolkit/releases/download/v32.4.1/scancode-toolkit‑v32.4.1_py3.10‑windows.zip
         unzip scancode-toolkit.zip
         mv scancode-toolkit-* scancode-toolkit
 
