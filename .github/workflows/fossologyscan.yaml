@@ -13,10 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install FOSSology
+    - name: Install FOSSology from official repo
       run: |
-        sudo apt-get update
-        sudo apt-get install -y fossology
+       sudo apt-get update
+       sudo apt-get install -y wget gnupg lsb-release
+       echo "deb [trusted=yes] http://repo.fossology.org/debian $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/fossology.list
+       sudo apt-get update
+       sudo apt-get install -y fossology
 
     - name: Run FOSSology CLI scan
       run: |
