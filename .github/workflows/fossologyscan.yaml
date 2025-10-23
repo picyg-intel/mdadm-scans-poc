@@ -1,4 +1,4 @@
-name: FOSSology Scan via API
+name: FOSSology License Scan
 
 on:
   push:
@@ -10,23 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Start FOSSology container
+    - name: Run FOSSology in Docker
       run: |
-        docker run -d --name fossology \
-          -p 8081:80 fossology/fossology:latest
-        sleep 30  # Give it time to initialize
+        docker run --rm \
+          -v "${{ github.workspace }}":/repo \
+          fossology/fossology:scanner \
+          /usr/local/bin/fossology --mode cli --path /repo --output /repo/fossology-report.spdx
 
-    - name: Upload code for scanning
-      run: |
-        zip -r source.zip .
-        curl -X POST "http://localhost/repo/api/v1/uploads" \
-          -F "file=@source.zip" \
-          -F "folder=default" \
-          -F "public=true" \
-          -u fossy:fossy
-
-    - name: Stop container
-      run: docker stop fossology
+    - name: Upload SPDX report
+      uses: actions/upload-artifact@v4
+      with:
+        name: fossology-spdx
+        path: fossology-report.spdx
