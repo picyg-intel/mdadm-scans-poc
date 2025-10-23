@@ -1,0 +1,32 @@
+name: FOSSology Scan (no Docker)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  fossology-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install FOSSology
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y fossology
+
+    - name: Run FOSSology CLI scan
+      run: |
+        mkdir reports
+        fossology --mode cli \
+          --path "${{ github.workspace }}" \
+          --output "${{ github.workspace }}/reports/fossology.spdx"
+
+    - name: Upload SPDX report
+      uses: actions/upload-artifact@v4
+      with:
+        name: fossology-report
+        path: reports/fossology.spdx
