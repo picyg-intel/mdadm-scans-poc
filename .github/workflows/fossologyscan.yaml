@@ -15,10 +15,10 @@ jobs:
 
     - name: Run FOSSology in Docker
       run: |
-        docker run --rm \
-          -v "${{ github.workspace }}":/repo \
-          fossology/fossology:latest \
-          /usr/local/bin/fossology --mode cli --path /repo --output /repo/fossology-report.spdx
+         docker run --rm \
+         -v "${{ github.workspace }}":/repo \
+         fossology/fossology-cli:latest \
+         --mode cli --path /repo --output /repo/fossology-report.spdx
 
     - name: Upload SPDX report
       uses: actions/upload-artifact@v4
