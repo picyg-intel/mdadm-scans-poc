@@ -1,4 +1,4 @@
-name: FOSSology Scan (no Docker)
+name: FOSSology License Scan
 
 on:
   push:
@@ -13,23 +13,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install FOSSology from official repo
+    - name: Run FOSSology in Docker
       run: |
-       sudo apt-get update
-       sudo apt-get install -y wget gnupg lsb-release
-       echo "deb [trusted=yes] http://repo.fossology.org/debian $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/fossology.list
-       sudo apt-get update
-       sudo apt-get install -y fossology
-
-    - name: Run FOSSology CLI scan
-      run: |
-        mkdir reports
-        fossology --mode cli \
-          --path "${{ github.workspace }}" \
-          --output "${{ github.workspace }}/reports/fossology.spdx"
+        docker run --rm \
+          -v "${{ github.workspace }}":/repo \
+          fossology/fossology:latest \
+          /usr/local/bin/fossology --mode cli --path /repo --output /repo/fossology-report.spdx
 
     - name: Upload SPDX report
       uses: actions/upload-artifact@v4
       with:
-        name: fossology-report
-        path: reports/fossology.spdx
+        name: fossology-spdx
+        path: fossology-report.spdx
