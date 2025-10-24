@@ -37,8 +37,15 @@ jobs:
           --copyright \
           --html ${{ github.workspace }}/results.html ${{ github.workspace }}
 
+        ./scancode \
+          --license \
+          --copyright \
+          --json-pp ${{ github.workspace }}/results.json ${{ github.workspace }}
+
     - name: Upload scan results
       uses: actions/upload-artifact@v4
       with:
         name: scancode-results
-        path: results.html
+        path: |
+           results.html
+           results.json
