@@ -1,27 +1,63 @@
-name: FOSSology License Scan
+name: Software Composition Analysis
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
+    paths:
+      - pyproject.toml
+      - poetry.lock
+  schedule:
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: read
+  actions: write
 
 jobs:
-  fossology-scan:
+  sbom:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+      - name: Install CDX Python
+        run: python3 -m pip install cyclonedx-bom
+      - name: Generate CDX SBOM
+        run: python3 -m cyclonedx_py poetry --spec-version 1.6 --output-format JSON --output-file sbom.json --validate
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
+          if-no-files-found: error
 
-    - name: Run FOSSology in Docker
-      run: |
-        docker run --rm \
-          -v "${{ github.workspace }}":/repo \
-          fossology/fossology:scanner \
-          /usr/local/bin/fossology --mode cli --path /repo --output /repo/fossology-report.spdx
-
-    - name: Upload SPDX report
-      uses: actions/upload-artifact@v4
-      with:
-        name: fossology-spdx
-        path: fossology-report.spdx
+  sca:
+    runs-on: ubuntu-latest
+    needs: sbom
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Download SBOM
+        uses: actions/download-artifact@v4
+        with:
+          name: sbom
+      - name: Run FOSSology analysis
+        id: fossology
+        uses: fossology/fossology-action@v1
+        with:
+          scan_mode: "scan-only-deps"
+          scanners: |
+            - nomos
+            - ojo
+            - copyright
+          report_format: "SPDX_JSON"
+          sbom_path: "sbom.json"
+      - name: Upload Scan Results Artifact
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fossology scan results
+          path: results/
