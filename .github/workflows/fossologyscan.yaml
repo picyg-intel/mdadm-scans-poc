@@ -1,6 +1,9 @@
 name: License scan on PR
 
-on: [pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
 
 jobs:
   compliance_check:
