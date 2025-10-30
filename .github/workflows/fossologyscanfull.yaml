@@ -28,9 +28,7 @@ jobs:
 
       - name: Generate CycloneDX SBOM
         run: |
-          cd ${{ github.workspace }}
-          echo ${{ github.workspace }}
-          cdxgen -o sbom.json
+          cyclonedx -o sbom.json
 
       - uses: actions/upload-artifact@v4
         with:
