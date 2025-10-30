@@ -1,12 +1,12 @@
 name: Software Composition Analysis
 
-on: [pull_request]
-#  push:
-#    paths:
-#      - pyproject.toml
-#      - poetry.lock
-#  schedule:
-#    - cron: '0 0 * * 0'  # Midnight, Sunday
+on:
+  push:
+    paths:
+      - pyproject.toml
+      - poetry.lock
+  schedule:
+    - cron: '0 0 * * 0'  # Midnight, Sunday
 
 permissions:
   contents: read
