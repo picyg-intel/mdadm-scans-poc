@@ -24,7 +24,7 @@ jobs:
         run: |
           curl -sSL https://github.com/CycloneDX/cyclonedx-cli/releases/latest/download/cyclonedx-linux-x64 -o /usr/local/bin/cyclonedx
           chmod +x /usr/local/bin/cyclonedx
-          cyclonedx version  # verify it runs
+          cyclonedx --version  # verify it runs
 
       - name: Generate CycloneDX SBOM
         run: |
