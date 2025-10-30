@@ -20,11 +20,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-          cache: 'pip'
-
       - name: Install CycloneDX CLI
         run: |
           curl -sSL https://github.com/CycloneDX/cyclonedx-cli/releases/latest/download/cyclonedx-linux-amd64 -o /usr/local/bin/cyclonedx
