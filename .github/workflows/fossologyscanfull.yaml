@@ -32,13 +32,13 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: bom
+          name: sbom
           path: bom.json
           if-no-files-found: error
 
   sca:
     runs-on: ubuntu-latest
-    needs: bom
+    needs: sbom
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -46,7 +46,7 @@ jobs:
       - name: Download SBOM
         uses: actions/download-artifact@v4
         with:
-          name: bom
+          name: sbom
 
       - name: Run FOSSology analysis
         id: fossology
