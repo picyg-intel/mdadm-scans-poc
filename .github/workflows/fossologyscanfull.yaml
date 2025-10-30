@@ -22,12 +22,13 @@ jobs:
 
       - name: Install CycloneDX CLI
         run: |
-          curl -sSL https://github.com/CycloneDX/cyclonedx-cli/releases/latest/download/cyclonedx-linux-amd64 -o /usr/local/bin/cyclonedx
+          curl -sSL https://github.com/CycloneDX/cyclonedx-cli/releases/latest/download/cyclonedx-linux-x64 -o /usr/local/bin/cyclonedx
           chmod +x /usr/local/bin/cyclonedx
+          cyclonedx version  # verify it runs
 
-      - name: Generate CycloneDX SBOM (source scan)
+      - name: Generate CycloneDX SBOM
         run: |
-          cyclonedx --output-format json --output-file sbom.json
+          cyclonedx create --output-format json --output-file sbom.json --type src --spec-version 1.6
 
       - uses: actions/upload-artifact@v4
         with:
