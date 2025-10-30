@@ -1,12 +1,12 @@
 name: Software Composition Analysis
 
-on:
-  push:
-    paths:
-      - pyproject.toml
-      - poetry.lock
-  schedule:
-    - cron: '0 0 * * 0'  # Midnight, Sunday
+on: [pull_request]
+#  push:
+#    paths:
+#      - pyproject.toml
+#      - poetry.lock
+#  schedule:
+#    - cron: '0 0 * * 0'  # Midnight, Sunday
 
 permissions:
   contents: read
@@ -25,11 +25,14 @@ jobs:
           python-version: '3.13'
           cache: 'pip'
 
-      - name: Install CDX Python
-        run: python3 -m pip install cyclonedx-bom
+      - name: Install CycloneDX CLI
+        run: |
+          curl -sSL https://github.com/CycloneDX/cyclonedx-cli/releases/latest/download/cyclonedx-linux-amd64 -o /usr/local/bin/cyclonedx
+          chmod +x /usr/local/bin/cyclonedx
 
-      - name: Generate CDX SBOM
-        run: python3 -m cyclonedx_py poetry --spec-version 1.6 --output-format JSON --output-file sbom.json --validate
+      - name: Generate CycloneDX SBOM (source scan)
+        run: |
+          cyclonedx create --output-format json --output-file sbom.json --type src --spec-version 1.6
 
       - uses: actions/upload-artifact@v4
         with:
