@@ -28,17 +28,17 @@ jobs:
 
       - name: Generate CycloneDX SBOM
         run: |
-          cyclonedx -o sbom.json
+          cyclonedx
 
       - uses: actions/upload-artifact@v4
         with:
-          name: sbom
-          path: sbom.json
+          name: bom
+          path: bom.json
           if-no-files-found: error
 
   sca:
     runs-on: ubuntu-latest
-    needs: sbom
+    needs: bom
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -46,7 +46,7 @@ jobs:
       - name: Download SBOM
         uses: actions/download-artifact@v4
         with:
-          name: sbom
+          name: bom
 
       - name: Run FOSSology analysis
         id: fossology
@@ -58,7 +58,7 @@ jobs:
             - ojo
             - copyright
           report_format: "SPDX_JSON"
-          sbom_path: "sbom.json"
+          sbom_path: "bom.json"
 
       - name: Upload Scan Results Artifact
         if: success() || failure()
